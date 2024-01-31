@@ -2,7 +2,7 @@ const canvas = document.getElementById("display");
 const ctx = canvas.getContext("2d");
 
 const audio = document.getElementById("song");
-let actx, analyser, source, dataArray;
+let actx, analyser, source, lastDataArray;
 
 const button = document.getElementById("play");
 
@@ -83,7 +83,18 @@ function loop() {
   ctx.fillStyle = "white";
   ctx.strokeStyle = "black";
 
+  let dataArray = new Uint8Array(lastDataArray.length);
+
   analyser.getByteFrequencyData(dataArray);
+
+  // screen shake
+  let totalDifference = 0;
+
+  for (let i = 0; i < dataArray.length; i++) {
+    totalDifference += Math.abs(dataArray[i] - lastDataArray[i]);
+  }
+
+  ctx.fillRect(0, 0, totalDifference, 10);
   
   // center panel
   let lastX = 0;
@@ -135,6 +146,8 @@ function loop() {
     rightPanel.fillRect(x, (y * 0.9), (1.5 / dataArray.length), 0.1);
   }
 
+  lastDataArray = dataArray;
+
   requestAnimationFrame(loop);
 }
 
@@ -148,7 +161,7 @@ button.onclick = () => {
     source.connect(actx.destination);
     analyser.fftSize = 2048;
     const bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
+    lastDataArray = new Uint8Array(bufferLength);
   }
   
   if (audio.paused) {
