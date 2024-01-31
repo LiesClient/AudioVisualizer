@@ -98,7 +98,7 @@ function loop() {
   let x = Math.cos(direction) * (totalDifference / width);
   let y = Math.sin(direction) * (totalDifference / height);
   
-  ctx.push();
+  ctx.save();
   ctx.translate(x, y);
   
   // center panel
@@ -153,7 +153,7 @@ function loop() {
 
   lastDataArray = dataArray;
 
-  ctx.pop();
+  ctx.restore();
 
   requestAnimationFrame(loop);
 }
