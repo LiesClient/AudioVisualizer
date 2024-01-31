@@ -99,8 +99,8 @@ function loop() {
       lastY = y;
     }
 
-    let brightness = 255 * (i / dataArray.length);
-    ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${dataArray[i] / 255 + 0.2})`;
+    let brightness = 255 * (1 - (i / dataArray.length));
+    ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, 1)`;
     
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
@@ -132,7 +132,7 @@ function loop() {
   for (let i = 0; i < dataArray.length; i++) {
     let x = i / (dataArray.length + 0.5);
     let y = Math.max(dataArray[i] / 255, 0.01);
-    rightPanel.fillRect(x, y - 0.05, (1.5 / dataArray.length), 0.1);
+    rightPanel.fillRect(x, (y * 0.9) - 0.05, (1.5 / dataArray.length), 0.1);
   }
 
   requestAnimationFrame(loop);
