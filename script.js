@@ -9,8 +9,8 @@ const button = document.getElementById("play");
 const width = window.innerWidth;
 const height = window.innerHeight;
 
-const padding = 20;
-const centerScreen = 400;
+const padding = width / 100;
+const centerScreen = width / 3;
 
 const leftPanel = new Panel(
   { x: padding, y: padding },
