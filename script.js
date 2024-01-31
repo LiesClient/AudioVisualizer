@@ -99,7 +99,8 @@ function loop() {
       lastY = y;
     }
 
-    ctx.fillStyle = `rgba(255, 255, 255, ${dataArray[i] / 255 + 0.2})`;
+    let brightness = 255 * (i / dataArray.length);
+    ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${dataArray[i] / 255 + 0.2})`;
     
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
@@ -145,7 +146,7 @@ button.onclick = () => {
 
     source.connect(analyser);
     source.connect(actx.destination);
-    analyser.fftSize = 1024;
+    analyser.fftSize = 2048;
     const bufferLength = analyser.frequencyBinCount;
     dataArray = new Uint8Array(bufferLength);
   }
