@@ -1,0 +1,38 @@
+html, body, canvas {
+  height: 100%;
+  width: 100%;
+  
+  background: black;
+  
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+  text-align: center;
+}
+
+button {
+  position: relative;
+  font-family: monospace;
+  border: 1px solid white;
+  border-radius: 2px;
+  color: white;
+  background-color: black;
+
+  padding: 1em;
+  margin: 1em;
+
+  font-size: 200%;
+  z-index: 200;
+
+  transition: background-color 500ms ease-in-out;
+}
+
+button:hover {
+  background-color: gray;
+}
+
