@@ -89,7 +89,7 @@ function loop() {
   let lastX = 0;
   let lastY = 0;
   for (let i = 0; i < dataArray.length; i++) {
-    let ang = (i / dataArray.length) * 8 * Math.PI;
+    let ang = (i / dataArray.length) * 12 * Math.PI;
     let mag = (dataArray[i] / 255) * (centerScreen/2 - padding);
     let x = Math.cos(ang) * mag + width / 2;
     let y = Math.sin(ang) * mag + height / 2;
@@ -100,7 +100,7 @@ function loop() {
     }
 
     let brightness = 255 * (1 - (i / dataArray.length));
-    ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, 1)`;
+    ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${brightness})`;
     
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
