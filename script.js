@@ -94,7 +94,12 @@ function loop() {
     totalDifference += Math.abs(dataArray[i] - lastDataArray[i]);
   }
 
-  ctx.fillRect(0, 0, totalDifference, 10);
+  let direction = Math.random() * 2 * Math.PI;
+  let x = Math.cos(direction) * (totalDifference / width);
+  let y = Math.sin(direction) * (totalDifference / height);
+  
+  ctx.push();
+  ctx.translate(x, y);
   
   // center panel
   let lastX = 0;
@@ -147,6 +152,8 @@ function loop() {
   }
 
   lastDataArray = dataArray;
+
+  ctx.pop();
 
   requestAnimationFrame(loop);
 }
