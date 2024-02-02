@@ -199,7 +199,7 @@ function loop(replay) {
   }
 
   // back panel
-  let spreadAngle = Math.PI / 6;
+  let spreadAngle = Math.PI / 4;
   let getPoint = (i, mag) => {
     let ang = (i / dataArray.length) * (Math.PI * 2 - spreadAngle * 2) + spreadAngle;
     let r = (dataArray[i] / 255) * mag * height;
