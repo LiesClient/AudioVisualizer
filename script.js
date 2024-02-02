@@ -61,6 +61,9 @@ function init() {
     });
   }
 
+  ctx.fillStyle = "black";
+  ctx.fillRect(-width, -height, width * 3, height * 3);
+
   ctx.fillStyle = "gray";
   ctx.strokeStyle = "white";
 
@@ -93,7 +96,7 @@ function loop(replay) {
   ctx.clearRect(-width, -height, width * 3, height * 3);
 
   ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, width, height);
+  ctx.fillRect(-width, -height, width * 3, height * 3);
 
   ctx.strokeStyle = "white";
   for (let i = 0; i < stars.length; i++) {
