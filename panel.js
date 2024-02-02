@@ -1,35 +1,53 @@
 class Panel {
-  tl; 
-  tr; 
-  br; 
-  bl;
+  top;
+  bot;
+  zFr;
+  zBa;
   ctx;
-  
+  width;
+  height;
+  maxZ;
+
   constructor (
-    topLeft,
-    topRight,
-    botLeft,
-    botRight
+    top,
+    bottom,
+    zFront,
+    zBack
   ) {
-    this.tl = topLeft;
-    this.tr = topRight;
-    this.br = botRight;
-    this.bl = botLeft;
+    this.top = top;
+    this.bot = bottom;
+    this.zFr = zFront;
+    this.zBa = zBack;
   }
 
   setContext(ctx) {
     this.ctx = ctx;
   }
 
+  setScreenSize(width, height) {
+    this.width = width;
+    this.height = height;
+    this.maxZ = Math.sqrt((width / 2) ** 2 + (height / 2) ** 2);
+  }
+
+  #calculateZ(x, y) {
+    return lerp(this.zBa, this.zFr, x);
+  }
   // (x, y) on panel to (ox, oy) to put on screen
   // (x, y) is the point on the panel
   // (ox, oy) is that point translated to screen space
+  
   translatePoint(x, y) {
-    let left = { x: lerp(this.bl.x, this.tl.x, y), y: lerp(this.bl.y, this.tl.y, y) };
-    let right = { x: lerp(this.br.x, this.tr.x, y), y: lerp(this.br.y, this.tr.y, y) };
-    
+    let z = this.#calculateZ(x, y);
+    let ox = this.top.x;
+    let oy = lerp(this.bot.y, this.top.y, y);
+    return this.from3d(ox, oy, z);
+  }
+
+  from3d(x, y, z) {
     return {
-      x: lerp(right.x, left.x, x), y: lerp(right.y, left.y, x)
+      x: x / z + width / 2,
+      y: y / z + height / 2,
     }
   }
 
@@ -60,4 +78,9 @@ class Panel {
 
 function lerp(a, b, t) {
   return a * t + (1 - t) * b;
+}
+
+function norm(vec) {
+  let mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
+  return { x: vec.x / mag, y: vec.y / mag };
 }
