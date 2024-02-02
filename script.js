@@ -12,42 +12,28 @@ const height = window.innerHeight;
 const padding = width / 100;
 const centerScreen = width / 6;
 
+const minZ = 0;
+const maxZ = Math.sqrt((width / 2) ** 2 + (height / 2) ** 2);
 const starCount = 1000;
 const stars = [];
 
 const leftPanel = new Panel(
-  { x: padding, y: padding },
-  { x: width/2, y: height/2 },
-  { x: padding, y: height - padding },
-  { x: width/2, y: height/2 }
+  { x: -width / 2, y: -height / 2 },
+  { x: -width / 2, y: height / 2 },
+  1 + (padding / maxZ),
+  (maxZ * 0.005)
 );
 
 const rightPanel = new Panel(
-  { x: width, y: padding },
-  { x: width/2, y: height/2 },
-  { x: width, y: height - padding },
-  { x: width/2, y: height/2 }
+  { x: width / 2, y: -height / 2 },
+  { x: width / 2, y: height / 2 },
+  1 + (padding / maxZ),
+  (maxZ * 0.005)
 );
-
-const centerPanel = new Panel(
-  { x: width / 2 - centerScreen / 2, y: (height - centerScreen) / 2 },
-  { x: width / 2 + centerScreen / 2, y: (height - centerScreen) / 2 },
-  { x: width / 2 - centerScreen / 2, y: height - (height - centerScreen) / 2 },
-  { x: width / 2 + centerScreen / 2, y: height - (height - centerScreen) / 2 }
-);
-
-// const bottomPanel = new Panel(
-//   { x: width / 2 - centerScreen / 2, y: height - (height - centerScreen) / 2 + padding },
-//   { x: width / 2 + centerScreen / 2, y: height - (height - centerScreen) / 2 + padding },
-//   { x: 2 * padding, y: height },
-//   { x: width - 2 * padding, y: height },
-// )
 
 const panels = [
   leftPanel,
   rightPanel,
-  // centerPanel, 
-  // bottomPanel
 ];
 
 let currentVelocity = 4;
@@ -59,9 +45,10 @@ function init() {
   ctx.translate(width / 2, height / 2);
   ctx.scale(0.99, 0.99);
   ctx.translate(-width / 2, -height / 2);
-
+  
   panels.forEach(panel => panel.setContext(ctx));
-
+  panels.forEach(panel => panel.setScreenSize(width, height));
+  
   for (let i = 0; i < starCount; i++) {
     let ang = Math.random() * Math.PI * 2;
     let mag = Math.random() * (height / 2) + height / 8;
@@ -75,6 +62,7 @@ function init() {
   }
 
   ctx.fillStyle = "gray";
+  ctx.strokeStyle = "white";
 
   for (let x = 0; x < 10; x++) {
     for (let y = 0; y < 10; y++) {
@@ -84,7 +72,6 @@ function init() {
     }
   }
 
-  ctx.strokeStyle = "white";
 
   for (let r = centerScreen / 2; r > 0; r -= padding) {
     if (r >= centerScreen / 2) continue;
@@ -101,7 +88,6 @@ function init() {
 function loop(replay) {
   if (audio.paused) {
     button.textContent = "Play";
-    currentVelocity = (1 + currentVelocity) / 2;
   }
 
   ctx.clearRect(-width, -height, width * 3, height * 3);
@@ -157,53 +143,52 @@ function loop(replay) {
   let x = 0;
   let y = 0;
 
-  if (!audio.paused) {
-    analyser.getByteTimeDomainData(dataArray);
-  
-    let totalMagnitude = 0;
-  
-    for (let i = 0; i < dataArray.length; i++) {
-      let x = (dataArray[i] / 128) - 1;
-      totalMagnitude += x * x;
-    }
-  
-    volume = Math.sqrt(totalMagnitude / dataArray.length);
-    let volumeChange = (volume - lastVolume) * 1000;
-  
-    if (volumeChange > 0) volume += volumeChange;
-  
-    currentVelocity -= currentVelocity * 0.25;
-    currentVelocity += (volume * 100) / dataArray.length + 2;
-  
-    let direction = Math.random() * 2 * Math.PI;
-    let scale = (currentVelocity ** 2) / 256;
-    x = Math.cos(direction) * scale;
-    y = Math.sin(direction) * scale;
-  } else {
-    for (let i = 0; i < dataArray.length; i++) {
-      dataArray[i] = 0;
-    }
+  analyser.getByteTimeDomainData(dataArray);
+
+  let totalMagnitude = 0;
+
+  for (let i = 0; i < dataArray.length; i++) {
+    let x = (dataArray[i] / 128) - 1;
+    totalMagnitude += x * x;
   }
+
+  volume = Math.sqrt(totalMagnitude / dataArray.length);
+  let volumeChange = (volume - lastVolume) * 1000;
+
+  if (volumeChange > 0) volume += volumeChange;
+
+  currentVelocity -= currentVelocity * 0.25;
+  currentVelocity += (volume * 100) / dataArray.length + 2;
+
+  let direction = Math.random() * 2 * Math.PI;
+  let scale = (currentVelocity ** 2) / 256;
+  x = Math.cos(direction) * scale;
+  y = Math.sin(direction) * scale;
 
   // screen shake
   ctx.save();
   ctx.translate(x, y);
 
   // right panel
-  ctx.fillStyle = "white";
   for (let i = 0; i < dataArray.length; i++) {
     let x = i / (dataArray.length + 0.5);
     let y = dataArray[i] / 255;
-    if (audio.paused) y = 0.5;
+    
+    ctx.fillStyle = "white";
     rightPanel.fillRect(x, y * 0.9, (1.5 / dataArray.length), 0.1);
+
+    ctx.fillStyle = "black";
+    rightPanel.fillRect(x, y * 0.9 + 0.05 - 0.0125, (1.5 / dataArray.length), 0.025);
+
   }
+  
+  ctx.fillStyle = "white";
 
   // back panel
   let spreadAngle = Math.PI / 4;
   let getPoint = (i, mag) => {
     let ang = (i / dataArray.length) * (Math.PI * 2 - spreadAngle * 2) + spreadAngle;
     let r = (dataArray[i] / 255) * mag * height;
-    if (audio.paused) r = 0.5 * mag * height;
     // let r = (128 / 255) * mag * height;
     let x = -Math.sin(ang) * r + width / 2;
     let y = Math.cos(ang) * r + height / 2;
@@ -248,7 +233,7 @@ function loop(replay) {
 
   ctx.lineWidth = 1;
 
-  if (!audio.paused) analyser.getByteFrequencyData(dataArray);
+  analyser.getByteFrequencyData(dataArray);
 
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   panels.forEach(panel => panel.fillRect(0, 0, 1, 1));
@@ -265,7 +250,6 @@ function loop(replay) {
   for (let i = 0; i < dataArray.length; i++) {
     let ang = (i / dataArray.length) * 12 * Math.PI;
     let mag = (dataArray[i] / 255) * (centerScreen / 2 - padding);
-    if (audio.paused) mag = Math.cos(i / dataArray.length * Math.PI * 4) * (centerScreen / 2 - padding) * 0.5;
     let x = -Math.sin(ang) * mag + width / 2;
     let y = Math.cos(ang) * mag + height / 2;
 
@@ -298,7 +282,6 @@ function loop(replay) {
   for (let i = 0; i < dataArray.length; i++) {
     let x = i / (dataArray.length + 0.5);
     let y = Math.max(dataArray[i] / 255, 0.01);
-    if (audio.paused) y = 0.01;
     leftPanel.fillRect(x, 1, (1.5 / dataArray.length), -y);
   }
 
