@@ -95,14 +95,10 @@ function init() {
 
   ctx.strokeStyle = "white";
   panels.forEach(panel => panel.strokeRect(0, 0, 1, 1));
-
-  loop();
 }
 
 
 function loop(replay) {
-  if (!actx) return requestAnimationFrame(loop);
-  
   if (audio.paused) {
     button.textContent = "Play";
     currentVelocity = (1 + currentVelocity) / 2;
@@ -301,6 +297,8 @@ button.onclick = () => {
     source.connect(analyser);
     source.connect(actx.destination);
     analyser.fftSize = 2048;
+
+    loop();
   }
 
   if (audio.paused) {
