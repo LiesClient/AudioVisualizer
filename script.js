@@ -219,7 +219,7 @@ function loop(replay) {
     { r: 0.75, c: "rgba(255, 255, 255, 0.2)" },
   ];
 
-  let offset = (height + padding) * Math.tan(spreadAngle);
+  let offset = (height / 2 + padding) * Math.tan(spreadAngle);
   ctx.lineWidth = 2;
   ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
   ctx.beginPath();
