@@ -157,7 +157,7 @@ function loop(replay) {
   let x = 0;
   let y = 0;
 
-  if (!audio.paused) {
+  if (audio.paused) {
     analyser.getByteTimeDomainData(dataArray);
   
     let totalMagnitude = 0;
