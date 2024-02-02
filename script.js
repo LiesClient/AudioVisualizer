@@ -101,6 +101,8 @@ function init() {
 
 
 function loop(replay) {
+  if (!actx) return requestAnimationFrame(loop);
+  
   if (audio.paused) {
     button.textContent = "Play";
     currentVelocity = (1 + currentVelocity) / 2;
