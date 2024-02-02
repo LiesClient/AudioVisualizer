@@ -193,15 +193,16 @@ function loop(replay) {
   ctx.fillStyle = "white";
   for (let i = 0; i < dataArray.length; i++) {
     let x = i / (dataArray.length + 0.5);
-    let y = Math.max(dataArray[i] / 255, 0.01);
+    let y = dataArray[i] / 255;
     if (audio.paused) y = 0.5;
-    rightPanel.fillRect(x, (y * 0.9), (1.5 / dataArray.length), 0.1);
+    rightPanel.fillRect(x, y * 0.9, (1.5 / dataArray.length), 0.1);
   }
 
   // back panel
   let getPoint = (i, mag) => {
     let ang = (i / dataArray.length) * 2 * Math.PI;
     let r = (dataArray[i] / 255) * mag * height;
+    if (audio.paused) r = 0.5 * mag * height;
     // let r = (128 / 255) * mag * height;
     let x = -Math.sin(ang) * r + width / 2;
     let y = Math.cos(ang) * r + height / 2;
@@ -288,6 +289,7 @@ function loop(replay) {
   for (let i = 0; i < dataArray.length; i++) {
     let x = i / (dataArray.length + 0.5);
     let y = Math.max(dataArray[i] / 255, 0.01);
+    if (audio.paused) y = 0.01;
     leftPanel.fillRect(x, 1, (1.5 / dataArray.length), -y);
   }
 
