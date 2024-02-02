@@ -257,6 +257,7 @@ function loop(replay) {
   for (let i = 0; i < dataArray.length; i++) {
     let ang = (i / dataArray.length) * 12 * Math.PI;
     let mag = (dataArray[i] / 255) * (centerScreen / 2 - padding);
+    if (audio.paused) mag = Math.sin(i / dataArray.length) * (centerScreen / 2 - padding) * 0.5;
     let x = -Math.sin(ang) * mag + width / 2;
     let y = Math.cos(ang) * mag + height / 2;
 
