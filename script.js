@@ -200,7 +200,7 @@ function loop(replay) {
 
   // back panel
   let getPoint = (i, mag) => {
-    let ang = (i / dataArray.length) * 2 * Math.PI;
+    let ang = (i / dataArray.length) * (Math.PI * 2 - Math.PI / 3) + Math.PI / 6;
     let r = (dataArray[i] / 255) * mag * height;
     if (audio.paused) r = 0.5 * mag * height;
     // let r = (128 / 255) * mag * height;
@@ -218,7 +218,13 @@ function loop(replay) {
     { r: 0.75, c: "rgba(255, 255, 255, 0.2)" },
   ];
 
+  let offset = (height + padding) * Math.tan(Math.PI / 6);
   ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+  ctx.beginPath();
+  ctx.moveTo(width / 2 + offset, height + padding);
+  ctx.moveTo(width / 2, height / 2);
+  ctx.moveTo(width / 2 - offset, height + padding);
+  ctx.stroke();
 
   for (let i = 0; i < lines.length; i++) {
     let mag = lines[i].r;
