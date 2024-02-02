@@ -103,7 +103,7 @@ function init() {
 function loop(replay) {
   if (audio.paused) {
     button.textContent = "Play";
-    return requestAnimationFrame(loop);
+    currentVelocity = (1 + currentVelocity) / 2;
   }
 
   ctx.clearRect(-width, -height, width * 3, height * 3);
