@@ -194,6 +194,7 @@ function loop(replay) {
   for (let i = 0; i < dataArray.length; i++) {
     let x = i / (dataArray.length + 0.5);
     let y = Math.max(dataArray[i] / 255, 0.01);
+    if (audio.paused) y = 0.5;
     rightPanel.fillRect(x, (y * 0.9), (1.5 / dataArray.length), 0.1);
   }
 
@@ -239,11 +240,6 @@ function loop(replay) {
   ctx.lineWidth = 1;
 
   if (!audio.paused) analyser.getByteFrequencyData(dataArray);
-  else {
-    for (let i = 0; i < dataArray.length; i++) {
-      dataArray[i] = 128;
-    }
-  }
 
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   panels.forEach(panel => panel.fillRect(0, 0, 1, 1));
