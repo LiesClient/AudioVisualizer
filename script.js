@@ -17,16 +17,16 @@ const stars = [];
 
 const leftPanel = new Panel(
   { x: padding, y: padding },
-  { x: lerp(padding, width / 2, 0.25), y: lerp(padding, height / 2, 0.25) },
+  { x: width/2, y: height/2 },
   { x: padding, y: height - padding },
-  { x: lerp(padding, width / 2, 0.25), y: lerp(height - padding, height / 2, 0.25) }
+  { x: width/2, y: height/2 }
 );
 
 const rightPanel = new Panel(
   { x: width, y: padding },
-  { x: lerp(width - padding, width / 2, 0.25), y: lerp(padding, height / 2, 0.25) },
+  { x: width/2, y: height/2 },
   { x: width, y: height - padding },
-  { x: lerp(width - padding, width / 2, 0.25), y: lerp(height - padding, height / 2, 0.25) }
+  { x: width/2, y: height/2 }
 );
 
 const centerPanel = new Panel(
