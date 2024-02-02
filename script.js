@@ -156,7 +156,7 @@ function loop(replay) {
 
   let dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-  analyser.getByteTimeDomainData(dataArray);
+  if (!audio.paused) analyser.getByteTimeDomainData(dataArray);
 
   let totalMagnitude = 0;
 
@@ -231,7 +231,7 @@ function loop(replay) {
 
   ctx.lineWidth = 1;
 
-  analyser.getByteFrequencyData(dataArray);
+  if (!audio.paused) analyser.getByteFrequencyData(dataArray);
 
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   panels.forEach(panel => panel.fillRect(0, 0, 1, 1));
