@@ -220,12 +220,12 @@ function loop(replay) {
   ];
 
   let offset = (height + padding) * Math.tan(spreadAngle);
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
   ctx.beginPath();
   ctx.moveTo(width / 2 + offset, height + padding);
-  ctx.moveTo(width / 2, height / 2);
-  ctx.moveTo(width / 2 - offset, height + padding);
+  ctx.lineTo(width / 2, height / 2);
+  ctx.lineTo(width / 2 - offset, height + padding);
   ctx.stroke();
 
   for (let i = 0; i < lines.length; i++) {
