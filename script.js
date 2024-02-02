@@ -239,6 +239,11 @@ function loop(replay) {
   ctx.lineWidth = 1;
 
   if (!audio.paused) analyser.getByteFrequencyData(dataArray);
+  else {
+    for (let i = 0; i < dataArray.length; i++) {
+      dataArray[i] = 128;
+    }
+  }
 
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   panels.forEach(panel => panel.fillRect(0, 0, 1, 1));
