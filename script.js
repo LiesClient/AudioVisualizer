@@ -153,28 +153,37 @@ function loop(replay) {
   ctx.lineWidth = 1;
 
   let dataArray = new Uint8Array(analyser.frequencyBinCount);
+  let volume = 0;
+  let x = 0;
+  let y = 0;
 
-  if (!audio.paused) analyser.getByteTimeDomainData(dataArray);
-
-  let totalMagnitude = 0;
-
-  for (let i = 0; i < dataArray.length; i++) {
-    let x = (dataArray[i] / 128) - 1;
-    totalMagnitude += x * x;
+  if (!audio.paused) {
+    analyser.getByteTimeDomainData(dataArray);
+  
+    let totalMagnitude = 0;
+  
+    for (let i = 0; i < dataArray.length; i++) {
+      let x = (dataArray[i] / 128) - 1;
+      totalMagnitude += x * x;
+    }
+  
+    volume = Math.sqrt(totalMagnitude / dataArray.length);
+    let volumeChange = (volume - lastVolume) * 1000;
+  
+    if (volumeChange > 0) volume += volumeChange;
+  
+    currentVelocity -= currentVelocity * 0.25;
+    currentVelocity += (volume * 100) / dataArray.length + 2;
+  
+    let direction = Math.random() * 2 * Math.PI;
+    let scale = (currentVelocity ** 2) / 256;
+    x = Math.cos(direction) * scale;
+    y = Math.sin(direction) * scale;
+  } else {
+    for (let i = 0; i < dataArray.length; i++) {
+      dataArray[i] = 0;
+    }
   }
-
-  let volume = Math.sqrt(totalMagnitude / dataArray.length);
-  let volumeChange = (volume - lastVolume) * 1000;
-
-  if (volumeChange > 0) volume += volumeChange;
-
-  currentVelocity -= currentVelocity * 0.25;
-  currentVelocity += (volume * 100) / dataArray.length + 2;
-
-  let direction = Math.random() * 2 * Math.PI;
-  let scale = (currentVelocity ** 2) / 256;
-  let x = Math.cos(direction) * scale;
-  let y = Math.sin(direction) * scale;
 
   // screen shake
   ctx.save();
@@ -285,7 +294,10 @@ function loop(replay) {
 
   lastVolume = volume;
 
-  requestAnimationFrame(loop);
+  requestAnimationFrame(() => {
+    try { loop(); } catch (e) 
+    { document.write(e); }
+  });
 }
 
 button.onclick = () => {
@@ -298,7 +310,8 @@ button.onclick = () => {
     source.connect(actx.destination);
     analyser.fftSize = 2048;
 
-    loop();
+    try { loop(); } catch (e) 
+    { document.write(e); }
   }
 
   if (audio.paused) {
