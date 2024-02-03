@@ -11,6 +11,7 @@ const height = window.innerHeight;
 
 const padding = width / 100;
 const centerScreen = width / 6;
+const screenDiagonal = Math.sqrt(width ** 2 + height ** 2);
 
 const minZ = 0;
 const maxZ = Math.sqrt((width / 2) ** 2 + (height / 2) ** 2);
@@ -18,22 +19,31 @@ const starCount = 1000;
 const stars = [];
 
 const leftPanel = new Panel(
-  { x: -width / 2, y: -height / 2 },
-  { x: -width / 2, y: height / 2 },
+  { x: -width / 2, y: -height / 2 + padding },
+  { x: -width / 2, y: height / 2 - padding },
   1 + (padding / maxZ),
   (maxZ * 0.005)
 );
 
 const rightPanel = new Panel(
-  { x: width / 2, y: -height / 2 },
-  { x: width / 2, y: height / 2 },
+  { x: width / 2, y: -height / 2 + padding },
+  { x: width / 2, y: height / 2 - padding },
   1 + (padding / maxZ),
   (maxZ * 0.005)
+);
+
+const bottomPanel = new Panel(
+  { x: -width / 2 + padding, y: height / 2 },
+  { x: width / 2 - padding, y: height / 2 },
+  1 + (padding / maxZ),
+  (maxZ * 0.005),
+  false
 );
 
 const panels = [
   leftPanel,
   rightPanel,
+  bottomPanel
 ];
 
 let currentVelocity = 4;
@@ -45,10 +55,13 @@ function init() {
   ctx.translate(width / 2, height / 2);
   ctx.scale(0.99, 0.99);
   ctx.translate(-width / 2, -height / 2);
-  
+
   panels.forEach(panel => panel.setContext(ctx));
   panels.forEach(panel => panel.setScreenSize(width, height));
-  
+
+  ctx.fillStyle = "white";
+  ctx.strokeStyle = "white";
+
   for (let i = 0; i < starCount; i++) {
     let ang = Math.random() * Math.PI * 2;
     let mag = Math.random() * (height / 2) + height / 8;
@@ -72,9 +85,9 @@ function init() {
       if ((x + y) % 2 == 0) continue;
       leftPanel.fillRect(x / 10, y / 10, 0.1, 0.1);
       rightPanel.fillRect(x / 10, y / 10, 0.1, 0.1);
+      bottomPanel.fillRect(x / 10, y / 10, 0.1, 0.1);
     }
   }
-
 
   for (let r = centerScreen / 2; r > 0; r -= padding) {
     if (r >= centerScreen / 2) continue;
@@ -99,6 +112,24 @@ function loop(replay) {
   ctx.fillRect(-width, -height, width * 3, height * 3);
 
   ctx.strokeStyle = "white";
+
+  let spreadAngle = 0;
+  let getPoint = (i, mag, add = 0) => {
+    let ang = (i / dataArray.length) * (Math.PI * 2 - spreadAngle * 2) + spreadAngle + add;
+    let r = (dataArray[i] / 255) * mag;
+    // let r = (128 / 255) * mag * height;
+    let x = Math.cos(ang) * r;
+    let y = Math.sin(ang) * r;
+
+    return { x, y, ang };
+  }
+
+  let lines = [
+    { r: 0.15, c: "rgba(255, 255, 255, 1.00)" },
+    { r: 0.30, c: "rgba(255, 255, 255, 0.85)" },
+    { r: 0.45, c: "rgba(255, 255, 255, 0.70)" },
+  ];
+
   for (let i = 0; i < stars.length; i++) {
     let star = stars[i];
 
@@ -172,64 +203,114 @@ function loop(replay) {
   ctx.save();
   ctx.translate(x, y);
 
+  ctx.fillStyle = "white";
+  ctx.strokeStyle = "white";
+  ctx.globalAlpha = 0.25;
+
+  // back panel
+  let unNorm = (x, y) => {
+    let d = Math.sqrt(x * x + y * y);
+    return { x: d / x, y: d / y };
+  };
+  
+  for (let j = 0; j < dataArray.length; j++) {
+    let p = getPoint(j, 0.5, (j / dataArray.length) * Math.PI * 12 + performance.now() / 500);
+    let lastIndex = j - 1;
+    // if (lastIndex < 0) lastIndex = dataArray.length - 1;
+    // let lp = getPoint(lastIndex, mag);
+    // p = unNorm(p.x, p.y);
+
+    let x = p.x * centerScreen;
+    let y = p.y * centerScreen;
+    let mag = centerScreen / 16;
+    let addVec = rotateVec(norm({ x: 1, y: 1 }), p.ang + Math.PI / 4 + performance.now() / 1000);
+    let tl = { x: x + addVec.x * mag, y: y + addVec.y * mag };
+    addVec = { x: -addVec.y, y: addVec.x };
+    let tr = { x: x + addVec.x * mag, y: y + addVec.y * mag };
+    addVec = { x: -addVec.y, y: addVec.x };
+    let br = { x: x + addVec.x * mag, y: y + addVec.y * mag };
+    addVec = { x: -addVec.y, y: addVec.x };
+    let bl = { x: x + addVec.x * mag, y: y + addVec.y * mag };
+    addVec = { x: -addVec.y, y: addVec.x };
+
+    ctx.beginPath();
+    ctx.moveTo(tl.x + width/2, tl.y + height/2);
+    ctx.lineTo(tr.x + width/2, tr.y + height/2);
+    ctx.lineTo(br.x + width/2, br.y + height/2);
+    ctx.lineTo(bl.x + width/2, bl.y + height/2);
+    ctx.lineTo(tl.x + width/2, tl.y + height/2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(tl.x * 0.5 + width/2, tl.y * 0.5 + height/2);
+    ctx.lineTo(tr.x * 0.5 + width/2, tr.y * 0.5 + height/2);
+    ctx.lineTo(br.x * 0.5 + width/2, br.y * 0.5 + height/2);
+    ctx.lineTo(bl.x * 0.5 + width/2, bl.y * 0.5 + height/2);
+    ctx.lineTo(tl.x * 0.5 + width/2, tl.y * 0.5 + height/2);
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 1;
+
+  lines.push(...[
+             { r: 0.60, c: "rgba(255, 255, 255, 0.55)" },
+             { r: 0.75, c: "rgba(255, 255, 255, 0.40)" },
+             { r: 0.90, c: "rgba(255, 255, 255, 0.25)" }]);
+
+  ctx.lineWidth = 1;
+  
   // right panel
   for (let i = 0; i < dataArray.length; i++) {
     let x = i / (dataArray.length + 0.5);
     let y = dataArray[i] / 255;
-    
+
+    ctx.globalAlpha = 1;
     ctx.fillStyle = "white";
     rightPanel.fillRect(x, y * 0.9, (1.5 / dataArray.length), 0.1);
 
     ctx.fillStyle = "black";
     rightPanel.fillRect(x, y * 0.9 + 0.05 - 0.0125, (1.5 / dataArray.length), 0.025);
 
+    // ctx.globalAlpha = 0.25;
+    // rightPanel.fillRect(x - (0.5 / dataArray.length), y * 0.9 - 0.025, (2 / dataArray.length), 0.15);
   }
-  
+
   ctx.fillStyle = "white";
 
-  // back panel
-  let spreadAngle = Math.PI / 4;
-  let getPoint = (i, mag) => {
-    let ang = (i / dataArray.length) * (Math.PI * 2 - spreadAngle * 2) + spreadAngle;
-    let r = (dataArray[i] / 255) * mag * height;
-    // let r = (128 / 255) * mag * height;
-    let x = -Math.sin(ang) * r + width / 2;
-    let y = Math.cos(ang) * r + height / 2;
-
-    return { x, y };
-  }
-
-  let lines = [
-    { r: 0.15, c: "rgba(255, 255, 255, 1)" },
-    { r: 0.30, c: "rgba(255, 255, 255, 0.8)" },
-    { r: 0.45, c: "rgba(255, 255, 255, 0.6)" },
-    { r: 0.60, c: "rgba(255, 255, 255, 0.4)" },
-    { r: 0.75, c: "rgba(255, 255, 255, 0.2)" },
-  ];
-
-  let offset = (height / 2 + padding) * Math.tan(spreadAngle);
-  // ctx.lineWidth = 2;
-  // ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-  // ctx.beginPath();
-  // ctx.moveTo(width / 2 + offset, height + padding);
-  // ctx.lineTo(width / 2, height / 2);
-  // ctx.lineTo(width / 2 - offset, height + padding);
-  // ctx.stroke();
+  // bottom panel
+  let actualSpread = (Math.PI) - Math.asin((width / 2) / (screenDiagonal / 2));
 
   for (let i = 0; i < lines.length; i++) {
     let mag = lines[i].r;
     ctx.strokeStyle = lines[i].c;
-    ctx.lineWidth = (lines.length - i) / 2 + 1;
+    ctx.lineWidth = 8;
+    ctx.globalAlpha = 0.25;
+
+    if (i == 1) spreadAngle = actualSpread;
 
     for (let j = 0; j < dataArray.length; j++) {
-      let p = getPoint(j, mag);
+      let p = getPoint(j, mag * height);
       let lastIndex = j - 1;
-      if (lastIndex < 0) lastIndex = dataArray.length - 1;
-      let lp = getPoint(lastIndex, mag);
+      // if (lastIndex < 0) lastIndex = dataArray.length - 1;
+      let lp = getPoint(lastIndex, mag * height);
 
       ctx.beginPath();
-      ctx.moveTo(lp.x, lp.y);
-      ctx.lineTo(p.x, p.y);
+      ctx.moveTo(-lp.y + width / 2, lp.x + height / 2);
+      ctx.lineTo(-p.y + width / 2, p.x + height / 2);
+      ctx.stroke();
+    }
+
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 1;
+    for (let j = 0; j < dataArray.length; j++) {
+      let p = getPoint(j, mag * height);
+      let lastIndex = j - 1;
+      // if (lastIndex < 0) lastIndex = dataArray.length - 1;
+      let lp = getPoint(lastIndex, mag * height);
+
+      ctx.beginPath();
+      ctx.moveTo(-lp.y + width / 2, lp.x + height / 2);
+      ctx.lineTo(-p.y + width / 2, p.x + height / 2);
       ctx.stroke();
     }
   }
@@ -250,15 +331,21 @@ function loop(replay) {
   // center panel
   let lastX = 0;
   let lastY = 0;
+  let center = bottomPanel.translatePoint(0.5, 0.5);
   for (let i = 0; i < dataArray.length; i++) {
     let ang = (i / dataArray.length) * 12 * Math.PI;
-    let mag = (dataArray[i] / 255) * (centerScreen / 2 - padding);
-    let x = -Math.sin(ang) * mag + width / 2;
-    let y = Math.cos(ang) * mag + height / 2;
+    let mag = (dataArray[i] / 255);
+    let x = Math.sin(ang) * mag * 0.5 + 0.5;
+    let y = -Math.cos(ang) * mag * 0.5 + 0.5;
 
+    let point = bottomPanel.translatePoint(x, y);
+
+    x = point.x;
+    y = point.y;
+    
     if (i == 0) {
-      lastX = x;
-      lastY = y;
+      lastX = center.x;
+      lastY = center.y;
     }
 
     let brightness = 255 * (1 - (i / dataArray.length));
@@ -267,7 +354,7 @@ function loop(replay) {
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
     ctx.lineTo(x, y);
-    ctx.lineTo(width / 2, height / 2);
+    ctx.lineTo(center.x, center.y);
     ctx.fill();
 
     ctx.beginPath();
@@ -293,8 +380,7 @@ function loop(replay) {
   lastVolume = volume;
 
   requestAnimationFrame(() => {
-    try { loop(); } catch (e) 
-    { document.write(e); }
+    try { loop(); } catch (e) { document.write(e); }
   });
 }
 
@@ -308,8 +394,7 @@ button.onclick = () => {
     source.connect(actx.destination);
     analyser.fftSize = 2048;
 
-    try { loop(); } catch (e) 
-    { document.write(e); }
+    try { loop(); } catch (e) { document.write(e); }
   }
 
   if (audio.paused) {
