@@ -43,7 +43,7 @@ const bottomPanel = new Panel(
 const panels = [
   leftPanel,
   rightPanel,
-  bottomPanel
+  // bottomPanel
 ];
 
 let currentVelocity = 4;
@@ -277,7 +277,7 @@ function loop(replay) {
 
   ctx.fillStyle = "white";
 
-  // bottom panel
+  // back panel
   let actualSpread = (Math.PI) - Math.asin((width / 2) / (screenDiagonal / 2));
 
   for (let i = 0; i < lines.length; i++) {
@@ -329,44 +329,44 @@ function loop(replay) {
   ctx.strokeStyle = "black";
 
   // center panel
-  let lastX = 0;
-  let lastY = 0;
-  let center = bottomPanel.translatePoint(0.5, 0.5);
-  for (let i = 0; i < dataArray.length; i++) {
-    let ang = (i / dataArray.length) * 12 * Math.PI;
-    let mag = (dataArray[i] / 255);
-    let x = Math.sin(ang) * mag * 0.5 + 0.5;
-    let y = -Math.cos(ang) * mag * 0.5 + 0.5;
+  // let lastX = 0;
+  // let lastY = 0;
+  // let center = bottomPanel.translatePoint(0.5, 0.5);
+  // for (let i = 0; i < dataArray.length; i++) {
+  //   let ang = (i / dataArray.length) * 12 * Math.PI;
+  //   let mag = (dataArray[i] / 255);
+  //   let x = Math.sin(ang) * mag * 0.5 + 0.5;
+  //   let y = -Math.cos(ang) * mag * 0.5 + 0.5;
 
-    let point = bottomPanel.translatePoint(x, y);
+  //   let point = bottomPanel.translatePoint(x, y);
 
-    x = point.x;
-    y = point.y;
+  //   x = point.x;
+  //   y = point.y;
     
-    if (i == 0) {
-      lastX = center.x;
-      lastY = center.y;
-    }
+  //   if (i == 0) {
+  //     lastX = center.x;
+  //     lastY = center.y;
+  //   }
 
-    let brightness = 255 * (1 - (i / dataArray.length));
-    ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${brightness})`;
+  //   let brightness = 255 * (1 - (i / dataArray.length));
+  //   ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${brightness})`;
 
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(x, y);
-    ctx.lineTo(center.x, center.y);
-    ctx.fill();
+  //   ctx.beginPath();
+  //   ctx.moveTo(lastX, lastY);
+  //   ctx.lineTo(x, y);
+  //   ctx.lineTo(center.x, center.y);
+  //   ctx.fill();
 
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(x, y);
-    ctx.stroke();
+  //   ctx.beginPath();
+  //   ctx.moveTo(lastX, lastY);
+  //   ctx.lineTo(x, y);
+  //   ctx.stroke();
 
-    lastX = x;
-    lastY = y;
-  }
+  //   lastX = x;
+  //   lastY = y;
+  // }
 
-  ctx.fillStyle = "white";
+  // ctx.fillStyle = "white";
 
   // left panel
   for (let i = 0; i < dataArray.length; i++) {
