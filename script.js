@@ -286,7 +286,7 @@ function loop(replay) {
     ctx.lineWidth = 8;
     ctx.globalAlpha = 0.25;
 
-    if (i == 1) spreadAngle = actualSpread;
+    // if (i == 1) spreadAngle = actualSpread;
 
     for (let j = 0; j < dataArray.length; j++) {
       let p = getPoint(j, mag * height);
