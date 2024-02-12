@@ -392,7 +392,7 @@ button.onclick = () => {
 
     source.connect(analyser);
     source.connect(actx.destination);
-    analyser.fftSize = 2048;
+    analyser.fftSize = 1024;
 
     try { loop(); } catch (e) { document.write(e); }
   }
