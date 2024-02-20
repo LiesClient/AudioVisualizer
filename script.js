@@ -286,12 +286,12 @@ function loop(replay) {
     ctx.lineWidth = 8;
     ctx.globalAlpha = 0.25;
 
-    // if (i == 1) spreadAngle = actualSpread;
+    if (i == 1) spreadAngle = actualSpread;
 
     for (let j = 0; j < dataArray.length; j++) {
       let p = getPoint(j, mag * height);
       let lastIndex = j - 1;
-      // if (lastIndex < 0) lastIndex = dataArray.length - 1;
+      if (lastIndex < 0) lastIndex = dataArray.length - 1;
       let lp = getPoint(lastIndex, mag * height);
 
       ctx.beginPath();
@@ -305,7 +305,7 @@ function loop(replay) {
     for (let j = 0; j < dataArray.length; j++) {
       let p = getPoint(j, mag * height);
       let lastIndex = j - 1;
-      // if (lastIndex < 0) lastIndex = dataArray.length - 1;
+      if (lastIndex < 0) lastIndex = dataArray.length - 1;
       let lp = getPoint(lastIndex, mag * height);
 
       ctx.beginPath();
