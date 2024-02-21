@@ -278,16 +278,14 @@ function loop(replay) {
   ctx.fillStyle = "white";
 
   // back panel
-  let actualSpread = Math.asin((width / 2) / (screenDiagonal / 2)) / 1.5;
+  spreadAngle = Math.asin((width / 2) / (screenDiagonal / 2)) / 1.5;
 
   for (let i = 0; i < lines.length; i++) {
     let mag = lines[i].r;
     ctx.strokeStyle = lines[i].c;
     ctx.lineWidth = 8;
     ctx.globalAlpha = 0.25;
-
-    if (i == 1) spreadAngle = actualSpread;
-
+    
     for (let j = 0; j < dataArray.length; j++) {
       let p = getPoint(j, mag * height);
       let lastIndex = j - 1;
