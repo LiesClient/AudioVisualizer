@@ -278,7 +278,7 @@ function loop(replay) {
   ctx.fillStyle = "white";
 
   // back panel
-  let actualSpread = Math.asin((width / 2) / (screenDiagonal / 2));
+  let actualSpread = Math.asin((width / 2) / (screenDiagonal / 2)) / 1.5;
 
   for (let i = 0; i < lines.length; i++) {
     let mag = lines[i].r;
